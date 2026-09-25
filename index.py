@@ -50,6 +50,12 @@ AI_WORKFLOW_ERRORS = Counter(
     "Total number of unexpected AI workflow errors",
 )
 
+AI_REQUESTS_TOTAL = Counter(
+    "ai_requests_total",
+    "Total number of AI requests.",
+    ["status"],
+)
+
 def get_request_id() -> str:
     return request_id_context.get()
 
@@ -349,6 +355,8 @@ async def ask(payload: AskRequest):
 
             print("The ai request get completed", report)
 
+            AI_REQUESTS_TOTAL.labels(status="success").inc()
+
             await save_report_to_mock_db(
                 request_id=request_id,
                 question=payload.question,
@@ -379,6 +387,7 @@ async def ask(payload: AskRequest):
             span.set_status(Status(StatusCode.ERROR))
             span.record_exception(error)
             print_error("The timeout error came in the ai processing")
+            AI_REQUESTS_TOTAL.labels(status="error").inc()
             AI_TIMEOUT_ERRORS.inc()
 
             raise HTTPException(
@@ -399,6 +408,7 @@ async def ask(payload: AskRequest):
             span.set_status(Status(StatusCode.ERROR))
             span.record_exception(error)
             print_error("The error occur in the ai processing")
+            AI_REQUESTS_TOTAL.labels(status="error").inc()
             AI_WORKFLOW_ERRORS.inc()
 
             raise HTTPException(

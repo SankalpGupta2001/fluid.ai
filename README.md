@@ -180,7 +180,7 @@ The application uses Python's built-in logging module with a custom formatter. T
 This allows application code to continue using simple print() calls while still producing structured log output.
 
 Example:
-[2026-09-25 10:43:30] INFO  ############# POST /ask #############  file: index.py  line: 230
+2026-09-25 13:39:28:477 info: "Status Code: 200" (at file:///C:/Users/SANKALP/OneDrive/Desktop/web/fluid.ai/index.py:233)
 
 The log structure provides:
 Timestamp
@@ -224,6 +224,30 @@ Like :
 ai_timeout_errors_total 1.0
 This tell that immediately tells us that an AI timeout has occurred.
 
+In /metrics endpoint we will show : 
+# HELP ai_timeout_errors_total Total number of AI timeout errors
+# TYPE ai_timeout_errors_total counter
+ai_timeout_errors_total 1.0
+# HELP ai_timeout_errors_created Total number of AI timeout errors
+# TYPE ai_timeout_errors_created gauge
+ai_timeout_errors_created 1.7903236663011086e+09
+# HELP ai_workflow_errors_total Total number of unexpected AI workflow errors
+# TYPE ai_workflow_errors_total counter
+ai_workflow_errors_total 0.0
+# HELP ai_workflow_errors_created Total number of unexpected AI workflow errors
+# TYPE ai_workflow_errors_created gauge
+ai_workflow_errors_created 1.7903236663011305e+09
+# HELP ai_requests_total Total number of AI requests.
+# TYPE ai_requests_total counter
+ai_requests_total{status="error"} 1.0
+ai_requests_total{status="success"} 1.0
+# HELP ai_requests_created Total number of AI requests.
+# TYPE ai_requests_created gauge
+ai_requests_created{status="error"} 1.7903237512030578e+09
+ai_requests_created{status="success"} 1.7903237648537388e+09
+
+
+
 # OpenTelemetry Tracing
 OpenTelemetry is the main engineering improvement selected for this assignment.
 I used trace in two place in POST /ask API, AI Processing.
@@ -260,7 +284,6 @@ Attributes :
 The application handles several types of failures.
 
 1. Validation error
-
 Invalid request:
 HTTP 422
 
@@ -289,6 +312,7 @@ The response contains:
 
 So the process becomes like:
 POST /ask -> Request Started -> AI Processing -> Generate reports in JSON format by AI  -> Report saved in db -> Company report generated (DOCX FILE) -> Request Completed
+
 
 
 Terminal Logs and in the /docs dashobard:
@@ -488,4 +512,4 @@ The production system could export OpenTelemetry traces to a proper backend such
 4. Security: We will use JWT, bcyrpt for authetication , authorization.
 5. Deployment: We can use Docker because in AI service we will use RAG so have self hosted vector store also to store context so for hosting vector store in the AWS EC2 Server we  can use docker like Milvus so we will use docker to host service.
 
-Video Link: https://drive.google.com/file/d/1GV5i4BumQc_M6aajpDugn5iN4ZHNimGK/view?usp=sharing
+Video Link: https://video.fluid.ai/share/cfff17f6-ba60-4c69-9094-3065d1769131
